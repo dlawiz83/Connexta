@@ -42,7 +42,7 @@
 
 1. Navigate to backend:
 
-```bash
+
 cd backend
 
 Install dependencies:
