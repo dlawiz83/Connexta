@@ -1,0 +1,32 @@
+{
+  "name": "connexta",
+  "version": "1.0.0",
+  "description": "[![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)](#)",
+  "homepage": "https://github.com/dlawiz83/Connexta#readme",
+  "bugs": {
+    "url": "https://github.com/dlawiz83/Connexta/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dlawiz83/Connexta.git"
+  },
+  "license": "MIT",
+  "author": "Ayesha Dawodi",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+     "start": "node backend/server",
+    "dev": "node --watch --env-file=.env backend/server"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "zod": "^4.1.3"
+  }
+}
