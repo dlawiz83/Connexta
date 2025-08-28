@@ -91,8 +91,7 @@ const deleteInteraction = asyncHandler(async (req, res) => {
         res.status(401);
         throw new Error('Not authorized');
     }
-
-    await interaction.remove();
+    await Interaction.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: 'Interaction removed' });
 });
 
