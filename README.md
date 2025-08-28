@@ -42,7 +42,7 @@
 
 1. Navigate to backend:
 
-```bash
+
 cd backend
 
 Install dependencies:
@@ -75,4 +75,4 @@ npm run dev
 License
 
 MIT License © 2025 Ayesha Dawodi
-```
+
