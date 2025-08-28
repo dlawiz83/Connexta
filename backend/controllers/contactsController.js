@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const contact = require('../models/ContactsModel');
+const Contact = require('../models/ContactsModel');
 
 // @desc    Create new contact
 // @route   POST /api/contacts
@@ -10,9 +10,10 @@ const setContact = asyncHandler(async(req, res )=>{
         res.status(400)
         throw new Error('Please provide name')
     }
-    const newContact  = await contact.create({
+    const newContact  = await Contact.create({
         userId: req.user._id,
-         title,
+        name,
+        title,
         company,
         email,
         linkedinURI,
@@ -74,7 +75,7 @@ const deleteContact = asyncHandler(async (req, res) => {
         throw new Error('Not authorized');
     }
 
-    await contact.remove();
+    await Contact.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: 'Contact removed' });
 });
 
