@@ -28,13 +28,32 @@ const setContact = asyncHandler(async(req, res )=>{
 
 
 
-// @desc    Get all contacts for logged-in user
+// @desc    Get all contacts for logged-in user with filters & sorting
 // @route   GET /api/contacts
 // @access  Private
 const getContacts = asyncHandler(async (req, res) => {
-    const contacts = await Contact.find({ userId: req.user._id }).sort({ createdAt: -1 });
-    res.status(200).json(contacts);
+  const { company, stage, notes, sort } = req.query;
+
+  const query = { userId: req.user._id };
+
+  // Filtering
+  if (company) query.company = company;
+  if (stage) query.stage = stage;
+  if (notes) query.notes = { $regex: notes, $options: "i" };
+
+  // Sorting
+  let sortObj = { nextActionAt: 1 }; // default
+  if (sort) {
+    const allowedSorts = ["nextActionAt", "name", "company", "createdAt"];
+    sortObj = allowedSorts.includes(sort) ? { [sort]: 1 } : { nextActionAt: 1 };
+  }
+
+  // Fetch contacts
+  const contacts = await Contact.find(query).sort(sortObj);
+
+  res.status(200).json(contacts);
 });
+
 
 // @desc    Update contact by ID
 // @route   PATCH /api/contacts/:id
@@ -79,11 +98,14 @@ const deleteContact = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'Contact removed' });
 });
 
+
+
 module.exports = {
     setContact,
     getContacts,
     updateContact,
-    deleteContact
+    deleteContact,
+   
 };
 
 
