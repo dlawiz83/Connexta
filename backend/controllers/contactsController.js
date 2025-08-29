@@ -1,5 +1,56 @@
 const asyncHandler = require('express-async-handler');
 const Contact = require('../models/ContactsModel');
+const fs = require('fs');
+const csv = require('csv-parser');
+
+
+
+
+
+const importContacts = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    res.status(400);
+    throw new Error('CSV file is required');
+  }
+
+  const contacts = [];
+  const errors = [];
+   fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (row) => {
+      // Validate required fields
+      if (!row.name || !row.email || !row.company) {
+        errors.push({ row, reason: 'Missing required field' });
+      } else {
+        contacts.push({
+          userId: req.user._id,
+          name: row.name,
+          title: row.title || '',
+          company: row.company,
+          email: row.email,
+          linkedinURI: row.linkedinURI || '',
+          timeZone: row.timeZone || '',
+          stage: row.stage || 'Prospect',
+          notes: row.notes || '',
+          lastInteractionAt: row.lastInteractionAt ? new Date(row.lastInteractionAt) : null,
+          nextActionAt: row.nextActionAt ? new Date(row.nextActionAt) : null,
+        });
+      }
+    })
+    .on('end', async () => {
+      if (contacts.length > 0) {
+        await Contact.insertMany(contacts);
+      }
+
+      // Delete the file after processing
+      fs.unlinkSync(req.file.path);
+
+      res.status(200).json({
+        imported: contacts.length,
+        errors,
+      });
+    });
+});
 
 // @desc    Create new contact
 // @route   POST /api/contacts
@@ -105,6 +156,7 @@ module.exports = {
     getContacts,
     updateContact,
     deleteContact,
+    importContacts
    
 };
 
