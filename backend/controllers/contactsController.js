@@ -2,6 +2,20 @@ const asyncHandler = require('express-async-handler');
 const Contact = require('../models/ContactsModel');
 const fs = require('fs');
 const csv = require('csv-parser');
+const Joi = require('joi');
+
+
+// Define schema
+const contactValidationSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().allow(''),
+  company: Joi.string().allow(''),
+  stage: Joi.string().valid('Prospect','Reached Out','Chat Scheduled','Referred','Interviewing'),
+  notes: Joi.string().allow(''),
+  lastInteractionAt: Joi.date().optional(),
+  nextActionAt: Joi.date().optional(),
+});
+
 
 
 
@@ -13,30 +27,31 @@ const importContacts = asyncHandler(async (req, res) => {
     throw new Error('CSV file is required');
   }
 
+
   const contacts = [];
   const errors = [];
    fs.createReadStream(req.file.path)
     .pipe(csv())
     .on('data', (row) => {
-      // Validate required fields
-      if (!row.name || !row.email || !row.company) {
-        errors.push({ row, reason: 'Missing required field' });
-      } else {
-        contacts.push({
-          userId: req.user._id,
-          name: row.name,
-          title: row.title || '',
-          company: row.company,
-          email: row.email,
-          linkedinURI: row.linkedinURI || '',
-          timeZone: row.timeZone || '',
-          stage: row.stage || 'Prospect',
-          notes: row.notes || '',
-          lastInteractionAt: row.lastInteractionAt ? new Date(row.lastInteractionAt) : null,
-          nextActionAt: row.nextActionAt ? new Date(row.nextActionAt) : null,
-        });
-      }
-    })
+  const { error } = contactValidationSchema.validate(row, { allowUnknown: true });
+  if (error) {
+    errors.push({ row, reason: error.details[0].message });
+  } else {
+    contacts.push({
+      userId: req.user._id,
+      name: row.name,
+      title: row.title || '',
+      company: row.company,
+      email: row.email,
+      linkedinURI: row.linkedinURI || '',
+      timeZone: row.timeZone || '',
+      stage: row.stage || 'Prospect',
+      notes: row.notes || '',
+      lastInteractionAt: row.lastInteractionAt ? new Date(row.lastInteractionAt) : null,
+      nextActionAt: row.nextActionAt ? new Date(row.nextActionAt) : null,
+    });
+  }
+})
     .on('end', async () => {
       if (contacts.length > 0) {
         await Contact.insertMany(contacts);
@@ -56,6 +71,11 @@ const importContacts = asyncHandler(async (req, res) => {
 // @route   POST /api/contacts
 // @access  Private
 const setContact = asyncHandler(async(req, res )=>{
+  const { error } = contactValidationSchema.validate(req.body);
+if (error) {
+  res.status(400);
+  throw new Error(error.details[0].message);
+}
     const { name, title, company, email, linkedinURI, timeZone, stage, notes, lastInteractionAt, nextActionAt } = req.body;
     if(!name){
         res.status(400)

@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {protect} = require('../middleware/authMiddleware')
+const multer = require('multer');
+
 
 const { getContacts, setContact, updateContact, deleteContact, importContacts} = require('../controllers/contactsController');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // temp folder for CSV
+
+
+const upload = multer({ dest: 'uploads/', limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB // temp folder for CSV
 router.route('/')
     .get(protect, getContacts)
     .post(protect, setContact);
