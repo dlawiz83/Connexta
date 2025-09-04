@@ -42,7 +42,6 @@
 
 1. Navigate to backend:
 
-
 cd backend
 
 Install dependencies:
@@ -61,18 +60,12 @@ Navigate to frontend:
 
 cd frontend
 
-
 Install dependencies:
 
 npm install
-
 
 Start React dev server:
 
 npm run dev
 
-
-License
-
-MIT License © 2025 Ayesha Dawodi
-
+All rights reserved
