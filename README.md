@@ -22,7 +22,7 @@
 ## Tech Stack
 
 **Backend**: Node.js, Express, MongoDB, Mongoose, JWT, bcrypt
-**Frontend**: React, React Router v6, React Hook Form, React Query/Redux Toolkit, Tailwind CSS  
+**Frontend**: React, React Router v6, React Hook Form, Tailwind CSS  
 **Dev Tools**: Nodemon, Postman, ESLint, Prettier  
 **Deployment**: Vercel (frontend), Render/Railway (backend)
 
