@@ -1,5 +1,4 @@
-import { NavLink } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, NavLink } from "react-router-dom";
 import { LayoutDashboard, Users, Kanban, Settings } from "lucide-react";
 import Usercard from "./UserCard";
 
@@ -61,7 +60,11 @@ function Sidebar() {
             </NavLink>
             <NavLink
               to="/settings"
-              className="flex items-center w-[90%] gap-2  rounded px-3 py-2 hover:bg-gray-300"
+              className={({ isActive }) =>
+                `flex items-center gap-2 w-[90%] rounded px-3 py-2 ${
+                  isActive ? "bg-gray-300" : "hover:bg-gray-300"
+                }`
+              }
             >
               <Settings className="w-4 h-4" />
               Settings

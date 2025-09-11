@@ -12,7 +12,6 @@ function UserCard({ user, onSignOut }) {
           <span className="text-[13px] text-gray-500">{user.email}</span>
         </div>
       </div>
-      {/*button */}
 
       <button
         className="w-[90%] px-3 py-2 flex items-center gap-1 text-gray-500 rounded hover:bg-gray-300 hover:text-black text-[13px] mt-2"
