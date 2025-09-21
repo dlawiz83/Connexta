@@ -1,15 +1,16 @@
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Users, Kanban, Settings } from "lucide-react";
 import Usercard from "./UserCard";
 
 function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const dummyUser = {
     name: "Ayesha",
     email: "ayesha@gmail.com",
   };
   const onSignOut = () => {
-    alert("sign out");
+    navigate("/Login");
   };
   return (
     <>

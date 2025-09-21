@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Sarah Johnson",
+    "company": "TechCorp",
+    "stage": "Reached Out",
+    "stageColor": "yellow",
+    "nextAction": "Email",
+    "dueDate": "2025-01-05",
+    "lastContact": "2024-12-28"
+  },
+  {
+    "id": 2,
+    "name": "Mike Chen",
+    "company": "StartupXYZ",
+    "stage": "Chat Scheduled",
+    "stageColor": "purple",
+    "nextAction": "Call",
+    "dueDate": "2025-01-03",
+    "lastContact": "2024-12-30"
+  },
+  {
+    "id": 3,
+    "name": "Emily Rodriguez",
+    "company": "InnovateLab",
+    "stage": "Interviewing",
+    "stageColor": "green",
+    "nextAction": "Dm",
+    "dueDate": "2025-01-04",
+    "lastContact": "2025-01-01"
+  },
+  {
+    "id": 4,
+    "name": "David Kim",
+    "company": "GlobalTech",
+    "stage": "Prospect",
+    "stageColor": "blue",
+    "nextAction": "Email",
+    "dueDate": "2025-01-06",
+    "lastContact": "2024-12-25"
+  }
+]

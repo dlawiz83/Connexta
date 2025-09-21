@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AuthCard from "../components/AuthCard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const [loginForm, setLoginForm] = useState({
@@ -8,10 +8,12 @@ function Login() {
     password: "",
   });
 
+  const navigate = useNavigate();
   const { email, password } = loginForm;
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    navigate("/");
   };
 
   const onChange = (e) => {

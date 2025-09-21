@@ -97,7 +97,7 @@ function SignUp() {
                   className="font-medium text-black hover:underline p-3"
                   to="/login"
                 >
-                  Sign
+                  Sign In
                 </Link>
               </p>
             </form>
