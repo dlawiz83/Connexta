@@ -20,7 +20,7 @@ export default function Contacts() {
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  // Fetch contacts from backend on load
+  //  Fetch contacts on load
   useEffect(() => {
     const fetchContacts = async () => {
       try {
@@ -30,7 +30,7 @@ export default function Contacts() {
           },
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.msg || "Failed to load contacts");
+        if (!res.ok) throw new Error(data.message || "Failed to load contacts");
         setContacts(data);
       } catch (err) {
         console.error(err);
@@ -40,26 +40,10 @@ export default function Contacts() {
     fetchContacts();
   }, []);
 
-  // Add new contact
-  const handleAddContact = async (newContact) => {
-    try {
-      const res = await fetch("https://connexta.onrender.com/api/contacts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(newContact),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Failed to add contact");
-
-      setContacts((prev) => [...prev, data]);
-      setShowModal(false);
-    } catch (err) {
-      alert(err.message);
-    }
+  //  When modal saves a new contact, just update state (no double POST)
+  const handleContactSaved = (createdContact) => {
+    setContacts((prev) => [...prev, createdContact]);
+    setShowModal(false);
   };
 
   const filteredContacts = contacts.filter((contact) => {
@@ -196,11 +180,11 @@ export default function Contacts() {
         )}
       </div>
 
-      {/* Add Modal */}
+      {/*  Add Modal */}
       {showModal && (
         <AddContactModal
           onClose={() => setShowModal(false)}
-          onSave={handleAddContact}
+          onSave={handleContactSaved}
         />
       )}
     </div>

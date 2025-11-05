@@ -15,7 +15,7 @@ const getActions = asyncHandler(async(req, res) =>{
         endDate.setDate(today.getDate() + days);
         // Find contacts with nextActionAt in range
     const contacts = await Contact.find({
-      userId,
+       user: userId, 
       nextActionAt: { $gte: today, $lte: endDate }
     }).sort({ nextActionAt: 1 });
 
