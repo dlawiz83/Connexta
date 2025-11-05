@@ -33,7 +33,7 @@ export default function AddContactModal({ onClose, onSave }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // ✅ Important
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(formattedData),
       });
@@ -41,7 +41,7 @@ export default function AddContactModal({ onClose, onSave }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Failed to add contact");
 
-      onSave(data); // Pass created contact to parent
+      onSave(data);
       onClose();
       alert("Contact added successfully!");
     } catch (err) {

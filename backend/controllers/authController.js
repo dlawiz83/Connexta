@@ -69,7 +69,7 @@ exports.updateProfile = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    // Update fields if provided
+   
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
 
@@ -80,7 +80,7 @@ exports.updateProfile = async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      token: generateToken(updatedUser._id), // optional: refresh token
+      token: generateToken(updatedUser._id), 
     });
   } catch (error) {
     console.error(error);

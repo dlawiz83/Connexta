@@ -8,6 +8,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -22,45 +24,47 @@ export function AuthProvider({ children }) {
   const updateUser = (updatedData) => {
     setUser((prev) => {
       const newUser = { ...prev, ...updatedData };
-      localStorage.setItem("user", JSON.stringify(newUser)); // keep it synced
+      localStorage.setItem("user", JSON.stringify(newUser));
       return newUser;
     });
   };
 
   const signup = async (name, email, password) => {
     try {
-      const res = await fetch("https://connexta.onrender.com/api/auth/signup", {
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Signup failed");
+      if (!res.ok) throw new Error(data.msg || data.message || "Signup failed");
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       navigate("/");
     } catch (err) {
+      console.error("Signup error:", err);
       throw err;
     }
   };
 
   const login = async (email, password) => {
     try {
-      const res = await fetch("https://connexta.onrender.com/api/auth/login", {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Login failed");
+      if (!res.ok) throw new Error(data.msg || data.message || "Login failed");
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       navigate("/");
     } catch (err) {
+      console.error("Login error:", err);
       throw err;
     }
   };
@@ -72,7 +76,6 @@ export function AuthProvider({ children }) {
     navigate("/login");
   };
 
-  //  Add updateUser in the value object
   const value = {
     user,
     loading,

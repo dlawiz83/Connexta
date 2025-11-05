@@ -1,7 +1,5 @@
 # Connexta
 
-[![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)](#)
-
 **Connexta** is a networking and outreach tracker designed to help professionals and students manage their connections, follow-ups, and next actions. It’s a full-stack MERN application built for tracking interactions, managing contacts, and staying on top of networking goals.
 
 ---
@@ -24,7 +22,7 @@
 **Backend**: Node.js, Express, MongoDB, Mongoose, JWT, bcrypt
 **Frontend**: React, React Router v6, React Hook Form, Tailwind CSS  
 **Dev Tools**: Nodemon, Postman, ESLint, Prettier  
-**Deployment**: Vercel (frontend), Render/Railway (backend)
+**Deployment**: Vercel (frontend), Render (backend)
 
 ---
 

@@ -7,7 +7,7 @@ export default function NextActionsCard() {
   const [actions, setActions] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const colors = {
     Prospect: "bg-blue-100 text-blue-800",
     "Reached Out": "bg-yellow-100 text-yellow-800",
@@ -25,12 +25,9 @@ export default function NextActionsCard() {
         return;
       }
 
-      const res = await fetch(
-        "https://connexta.onrender.com/api/next-actions?days=7",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await fetch(`${API_URL}/api/next-actions?days=7`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to fetch actions");
       setActions(data);
@@ -105,8 +102,8 @@ export default function NextActionsCard() {
                       {item.stage}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-[13px] text-gray-700">
-                    {item.nextActionSnippet || "-"}
+                  <td className="px-4 py-2 text-[13px] text-gray-700 capitalize">
+                    {item.type || "-"}
                   </td>
                   <td className="px-4 py-2 text-[13px]">
                     {item.nextActionAt

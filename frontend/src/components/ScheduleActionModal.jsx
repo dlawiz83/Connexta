@@ -7,58 +7,79 @@ export default function ScheduleActionModal({
   onActionCreated,
 }) {
   const [contacts, setContacts] = useState([]);
+  const [loadingContacts, setLoadingContacts] = useState(true);
   const [form, setForm] = useState({
     contactId: "",
     type: "",
-    contentSnippet: "",
-    date: new Date().toISOString().split("T")[0], // default today
+    nextActionSnippet: "",
+    date: new Date().toISOString().split("T")[0],
     nextActionAt: "",
   });
+
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Fetch contacts for dropdown
   useEffect(() => {
     const fetchContacts = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return alert("Please log in again.");
+        if (!token) {
+          alert("Please log in again.");
+          return;
+        }
 
-        const res = await fetch("https://connexta.onrender.com/api/contacts", {
+        const res = await fetch(`${API_URL}/api/contacts`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         const data = await res.json();
-        if (res.ok) setContacts(data);
+        if (!res.ok) throw new Error(data.message || "Failed to load contacts");
+
+        setContacts(data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching contacts:", err);
+        alert(err.message);
+      } finally {
+        setLoadingContacts(false);
       }
     };
-    fetchContacts();
-  }, []);
 
+    if (isOpen) fetchContacts();
+  }, [isOpen, API_URL]);
+
+  // Handle form changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(
-        "https://connexta.onrender.com/api/interactions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(form),
-        }
-      );
+      if (!token) {
+        alert("Please log in again.");
+        return;
+      }
+
+      const res = await fetch(`${API_URL}/api/interactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to create action");
+      if (!res.ok) throw new Error(data.message || "Failed to schedule action");
+
       alert("Action scheduled successfully!");
-      onActionCreated?.(); // refresh parent
+      onActionCreated?.();
       onClose();
     } catch (err) {
+      console.error("Error scheduling action:", err);
       alert(err.message);
     }
   };
@@ -67,7 +88,8 @@ export default function ScheduleActionModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-lg">
+      <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-lg animate-fadeIn">
+        {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-lg font-semibold">Schedule Next Action</h2>
           <button onClick={onClose}>
@@ -75,26 +97,31 @@ export default function ScheduleActionModal({
           </button>
         </div>
 
+        {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Contact */}
           <div>
             <label className="text-sm font-medium text-gray-700">
               Contact *
             </label>
-            <select
-              name="contactId"
-              value={form.contactId}
-              onChange={handleChange}
-              required
-              className="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm"
-            >
-              <option value="">Select contact</option>
-              {contacts.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name} — {c.company}
-                </option>
-              ))}
-            </select>
+            {loadingContacts ? (
+              <p className="text-sm text-gray-500 mt-1">Loading contacts...</p>
+            ) : (
+              <select
+                name="contactId"
+                value={form.contactId}
+                onChange={handleChange}
+                required
+                className="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm"
+              >
+                <option value="">Select contact</option>
+                {contacts.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name} — {c.company}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           {/* Action Type */}
@@ -113,6 +140,7 @@ export default function ScheduleActionModal({
               <option value="email">Email</option>
               <option value="call">Call</option>
               <option value="dm">DM</option>
+              <option value="meeting">Meeting</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -123,8 +151,8 @@ export default function ScheduleActionModal({
               Description
             </label>
             <textarea
-              name="contentSnippet"
-              value={form.contentSnippet}
+              name="nextActionSnippet"
+              value={form.nextActionSnippet}
               onChange={handleChange}
               placeholder="Add details..."
               rows={3}

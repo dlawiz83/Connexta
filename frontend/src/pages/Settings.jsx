@@ -18,19 +18,20 @@ export default function Settings() {
     confirm: "",
   });
 
+  // ✅ Use environment variable for API base URL
+  const API_URL =
+    import.meta.env.VITE_API_URL || "https://connexta.onrender.com";
+
   const handleSave = async () => {
     try {
-      const res = await fetch(
-        "https://connexta.onrender.com/api/auth/update-profile",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ name: profile.name, email: profile.email }),
-        }
-      );
+      const res = await fetch(`${API_URL}/api/auth/update-profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ name: profile.name, email: profile.email }),
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Update failed");
@@ -53,20 +54,17 @@ export default function Settings() {
     }
 
     try {
-      const res = await fetch(
-        "https://connexta.onrender.com/api/auth/change-password",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            currentPassword: passwords.current,
-            newPassword: passwords.newPass,
-          }),
-        }
-      );
+      const res = await fetch(`${API_URL}/api/auth/change-password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          currentPassword: passwords.current,
+          newPassword: passwords.newPass,
+        }),
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Failed to change password");

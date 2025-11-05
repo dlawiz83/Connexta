@@ -20,11 +20,14 @@ export default function Contacts() {
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  const API_URL =
+    import.meta.env.VITE_API_URL || "https://connexta.onrender.com";
+
   //  Fetch contacts on load
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const res = await fetch("https://connexta.onrender.com/api/contacts", {
+        const res = await fetch(`${API_URL}/api/contacts`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -38,9 +41,8 @@ export default function Contacts() {
       }
     };
     fetchContacts();
-  }, []);
+  }, [API_URL]);
 
-  //  When modal saves a new contact, just update state (no double POST)
   const handleContactSaved = (createdContact) => {
     setContacts((prev) => [...prev, createdContact]);
     setShowModal(false);
