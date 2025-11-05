@@ -106,7 +106,7 @@ export default function NextActionsCard() {
                     </span>
                   </td>
                   <td className="px-4 py-2 text-[13px] text-gray-700">
-                    {item.lastInteractionSnippet || "-"}
+                    {item.nextActionSnippet || "-"}
                   </td>
                   <td className="px-4 py-2 text-[13px]">
                     {item.nextActionAt

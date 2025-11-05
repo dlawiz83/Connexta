@@ -6,7 +6,7 @@ const getActions = asyncHandler(async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Normalize date range (start of today → end of +days)
+    // Normalize date range (start of today to end of +days)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const days = parseInt(req.query.days) || 7;
@@ -20,9 +20,16 @@ const getActions = asyncHandler(async (req, res) => {
       nextActionAt: { $gte: today, $lte: endDate },
     }).sort({ nextActionAt: 1 });
 
-    // Add latest interaction snippets
+    // Attach next action + last interaction info
     const results = await Promise.all(
       contacts.map(async (contact) => {
+        // Find the interaction that scheduled this nextActionAt
+        const nextAction = await Interaction.findOne({
+          contactId: contact._id,
+          nextActionAt: contact.nextActionAt,
+        }).select('contentSnippet');
+
+       
         const latestInteraction = await Interaction.findOne({
           contactId: contact._id,
         })
@@ -35,6 +42,7 @@ const getActions = asyncHandler(async (req, res) => {
           stage: contact.stage,
           nextActionAt: contact.nextActionAt,
           lastInteractionAt: contact.lastInteractionAt,
+          nextActionSnippet: nextAction?.contentSnippet || null,
           lastInteractionSnippet: latestInteraction?.contentSnippet || null,
         };
       })
