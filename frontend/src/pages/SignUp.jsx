@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
+import { AuthContext } from "../context/AuthContext";
 
 function SignUp() {
-  const navigate = useNavigate();
+  const { signup } = useContext(AuthContext);
+
   const [signUpForm, setSignUpForm] = useState({
     name: "",
     email: "",
@@ -30,18 +32,7 @@ function SignUp() {
 
     try {
       setLoading(true);
-      const res = await fetch("https://connexta.onrender.com/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Signup failed");
-
-      // save token for authenticated requests
-      localStorage.setItem("token", data.token);
-      navigate("/"); // redirect to dashboard or homepage
+      await signup(name, email, password);
     } catch (err) {
       setError(err.message);
     } finally {

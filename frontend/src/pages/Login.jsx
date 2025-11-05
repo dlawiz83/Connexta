@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
+import { AuthContext } from "../context/AuthContext";
 
 function Login() {
-  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,17 +22,7 @@ function Login() {
 
     try {
       setLoading(true);
-      const res = await fetch("https://connexta.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Login failed");
-
-      localStorage.setItem("token", data.token);
-      navigate("/"); // redirect after login
+      await login(email, password);
     } catch (err) {
       setError(err.message);
     } finally {
