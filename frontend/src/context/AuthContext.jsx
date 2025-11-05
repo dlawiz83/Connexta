@@ -1,7 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Create context
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -9,7 +8,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load token + user data on app start
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -21,7 +19,14 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  // Signup function
+  const updateUser = (updatedData) => {
+    setUser((prev) => {
+      const newUser = { ...prev, ...updatedData };
+      localStorage.setItem("user", JSON.stringify(newUser)); // keep it synced
+      return newUser;
+    });
+  };
+
   const signup = async (name, email, password) => {
     try {
       const res = await fetch("https://connexta.onrender.com/api/auth/signup", {
@@ -41,7 +46,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Login function
   const login = async (email, password) => {
     try {
       const res = await fetch("https://connexta.onrender.com/api/auth/login", {
@@ -61,7 +65,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Logout function
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -69,12 +72,14 @@ export function AuthProvider({ children }) {
     navigate("/login");
   };
 
+  //  Add updateUser in the value object
   const value = {
     user,
     loading,
     signup,
     login,
     logout,
+    updateUser,
     isAuthenticated: !!user,
   };
 

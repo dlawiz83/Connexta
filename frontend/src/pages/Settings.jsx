@@ -3,7 +3,7 @@ import { User, Lock, X } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Settings() {
-  const { user } = useContext(AuthContext);
+  const { user, updateUser } = useContext(AuthContext);
 
   const [profile, setProfile] = useState({
     name: user?.name || "",
@@ -34,6 +34,7 @@ export default function Settings() {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Update failed");
+      updateUser({ name: profile.name });
 
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
