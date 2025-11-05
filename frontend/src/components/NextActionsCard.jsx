@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, Mail, Phone, MessageSquare, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Button from "./Button";
 import ScheduleActionModal from "../components/ScheduleActionModal";
 
@@ -19,12 +19,16 @@ export default function NextActionsCard() {
   const fetchActions = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in again.");
+        return;
+      }
+
       const res = await fetch(
         "https://connexta.onrender.com/api/next-actions?days=7",
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       const data = await res.json();
@@ -44,6 +48,7 @@ export default function NextActionsCard() {
 
   return (
     <div className="bg-white w-full h-auto rounded-xl border relative">
+      {/* Header */}
       <div className="m-6 flex flex-row items-center justify-between">
         <div>
           <h1 className="text-[14px] font-medium">Upcoming Next Actions</h1>
@@ -52,7 +57,7 @@ export default function NextActionsCard() {
           </p>
         </div>
         <Button width="w-28" height="h-10" onClick={() => setOpenModal(true)}>
-          + Add Action
+          <Plus size={14} /> Add Action
         </Button>
       </div>
 
@@ -100,10 +105,8 @@ export default function NextActionsCard() {
                       {item.stage}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-[13px]">
-                    <div className="flex items-center gap-1 text-gray-700">
-                      {item.lastInteractionSnippet || "-"}
-                    </div>
+                  <td className="px-4 py-2 text-[13px] text-gray-700">
+                    {item.lastInteractionSnippet || "-"}
                   </td>
                   <td className="px-4 py-2 text-[13px]">
                     {item.nextActionAt
@@ -111,8 +114,8 @@ export default function NextActionsCard() {
                       : "-"}
                   </td>
                   <td className="px-4 py-2 text-[13px] text-gray-500">
-                    {item.lastInteractionSnippet
-                      ? item.lastInteractionSnippet
+                    {item.lastInteractionAt
+                      ? new Date(item.lastInteractionAt).toLocaleDateString()
                       : "-"}
                   </td>
                 </tr>

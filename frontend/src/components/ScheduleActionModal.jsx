@@ -11,18 +11,19 @@ export default function ScheduleActionModal({
     contactId: "",
     type: "",
     contentSnippet: "",
-    date: "",
+    date: new Date().toISOString().split("T")[0], // default today
     nextActionAt: "",
   });
 
-  //  Fetch contacts for dropdown
+  // Fetch contacts for dropdown
   useEffect(() => {
     const fetchContacts = async () => {
       try {
+        const token = localStorage.getItem("token");
+        if (!token) return alert("Please log in again.");
+
         const res = await fetch("https://connexta.onrender.com/api/contacts", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         if (res.ok) setContacts(data);
@@ -40,22 +41,23 @@ export default function ScheduleActionModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(
         "https://connexta.onrender.com/api/interactions",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(form),
         }
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to create action");
-      onActionCreated();
-      onClose();
       alert("Action scheduled successfully!");
+      onActionCreated?.(); // refresh parent
+      onClose();
     } catch (err) {
       alert(err.message);
     }
@@ -74,6 +76,7 @@ export default function ScheduleActionModal({
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Contact */}
           <div>
             <label className="text-sm font-medium text-gray-700">
               Contact *
@@ -94,6 +97,7 @@ export default function ScheduleActionModal({
             </select>
           </div>
 
+          {/* Action Type */}
           <div>
             <label className="text-sm font-medium text-gray-700">
               Action Type *
@@ -113,6 +117,7 @@ export default function ScheduleActionModal({
             </select>
           </div>
 
+          {/* Description */}
           <div>
             <label className="text-sm font-medium text-gray-700">
               Description
@@ -127,6 +132,22 @@ export default function ScheduleActionModal({
             />
           </div>
 
+          {/* Interaction Date */}
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Interaction Date *
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={form.date}
+              onChange={handleChange}
+              required
+              className="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm"
+            />
+          </div>
+
+          {/* Next Action Date */}
           <div>
             <label className="text-sm font-medium text-gray-700">
               Next Action Date *
@@ -141,6 +162,7 @@ export default function ScheduleActionModal({
             />
           </div>
 
+          {/* Buttons */}
           <div className="flex justify-end gap-2 pt-4 border-t mt-4">
             <button
               type="button"
