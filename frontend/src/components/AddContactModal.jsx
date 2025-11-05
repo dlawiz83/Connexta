@@ -15,10 +15,9 @@ export default function AddContactModal({ onClose, onSave }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Ensure fields match backend expectations
     const formattedData = {
       name: form.name,
       email: form.email,
@@ -29,7 +28,25 @@ export default function AddContactModal({ onClose, onSave }) {
       nextActionAt: form.nextActionAt || null,
     };
 
-    onSave(formattedData);
+    try {
+      const res = await fetch("https://connexta.onrender.com/api/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // ✅ Important
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Failed to add contact");
+
+      onSave(data); // Pass created contact to parent
+      onClose();
+      alert("Contact added successfully!");
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   return (
