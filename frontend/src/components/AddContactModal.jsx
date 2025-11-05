@@ -3,12 +3,12 @@ import { useState } from "react";
 export default function AddContactModal({ onClose, onSave }) {
   const [form, setForm] = useState({
     name: "",
-    company: "",
-    role: "",
     email: "",
+    company: "",
+    title: "",
     stage: "Prospect",
-    lastContact: "",
-    nextAction: "",
+    lastInteractionAt: "",
+    nextActionAt: "",
   });
 
   const handleChange = (e) => {
@@ -17,7 +17,19 @@ export default function AddContactModal({ onClose, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(form);
+
+    // Ensure fields match backend expectations
+    const formattedData = {
+      name: form.name,
+      email: form.email,
+      company: form.company,
+      title: form.title,
+      stage: form.stage,
+      lastInteractionAt: form.lastInteractionAt || null,
+      nextActionAt: form.nextActionAt || null,
+    };
+
+    onSave(formattedData);
   };
 
   return (
@@ -49,10 +61,10 @@ export default function AddContactModal({ onClose, onSave }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-gray-700">Role</label>
+              <label className="text-sm text-gray-700">Title</label>
               <input
-                name="role"
-                value={form.role}
+                name="title"
+                value={form.title}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
               />
@@ -88,9 +100,9 @@ export default function AddContactModal({ onClose, onSave }) {
             <div>
               <label className="text-sm text-gray-700">Next Action Date</label>
               <input
-                name="nextAction"
+                name="nextActionAt"
                 type="date"
-                value={form.nextAction}
+                value={form.nextActionAt}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
               />
@@ -98,11 +110,13 @@ export default function AddContactModal({ onClose, onSave }) {
           </div>
 
           <div>
-            <label className="text-sm text-gray-700">Last Contact Date</label>
+            <label className="text-sm text-gray-700">
+              Last Interaction Date
+            </label>
             <input
-              name="lastContact"
+              name="lastInteractionAt"
               type="date"
-              value={form.lastContact}
+              value={form.lastInteractionAt}
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
             />

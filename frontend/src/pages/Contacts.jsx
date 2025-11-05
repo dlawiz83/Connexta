@@ -1,11 +1,5 @@
-import { useState } from "react";
-import {
-  Search,
-  Plus,
-  ChevronDown,
-  FileSpreadsheet,
-  UserPlus,
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Plus, ChevronDown, UserPlus } from "lucide-react";
 import AddContactModal from "../components/AddContactModal";
 
 const getStageColor = (stage) => {
@@ -20,49 +14,63 @@ const getStageColor = (stage) => {
 };
 
 export default function Contacts() {
-  const [contacts, setContacts] = useState([
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      company: "TechCorp",
-      role: "Senior Engineer",
-      stage: "Reached Out",
-      lastContact: "2024-12-28",
-      nextAction: "2025-01-05",
-      email: "sarah.j@techcorp.com",
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      company: "StartupXYZ",
-      role: "CTO",
-      stage: "Chat Scheduled",
-      lastContact: "2024-12-30",
-      nextAction: "2025-01-03",
-      email: "mike@startupxyz.com",
-    },
-  ]);
-
+  const [contacts, setContacts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [stageFilter, setStageFilter] = useState("all");
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  // Fetch contacts from backend on load
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const res = await fetch("https://connexta.onrender.com/api/contacts", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.msg || "Failed to load contacts");
+        setContacts(data);
+      } catch (err) {
+        console.error(err);
+        alert(err.message);
+      }
+    };
+    fetchContacts();
+  }, []);
+
+  // Add new contact
+  const handleAddContact = async (newContact) => {
+    try {
+      const res = await fetch("https://connexta.onrender.com/api/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(newContact),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Failed to add contact");
+
+      setContacts((prev) => [...prev, data]);
+      setShowModal(false);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const filteredContacts = contacts.filter((contact) => {
     const matchesSearch =
-      contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.role.toLowerCase().includes(searchTerm.toLowerCase());
+      contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contact.company?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStage = stageFilter === "all" || contact.stage === stageFilter;
     return matchesSearch && matchesStage;
   });
 
   const stages = Array.from(new Set(contacts.map((c) => c.stage)));
-
-  const handleAddContact = (newContact) => {
-    setContacts((prev) => [...prev, { ...newContact, id: prev.length + 1 }]);
-    setShowModal(false);
-  };
 
   return (
     <div className="space-y-6">
@@ -99,7 +107,7 @@ export default function Contacts() {
             ))}
           </select>
 
-          {/* Add Contact Dropdown */}
+          {/* Add Contact Button */}
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -133,10 +141,10 @@ export default function Contacts() {
               <tr className="border-b bg-gray-50 text-left">
                 <th className="px-4 py-2 font-medium text-gray-700">Name</th>
                 <th className="px-4 py-2 font-medium text-gray-700">Company</th>
-                <th className="px-4 py-2 font-medium text-gray-700">Role</th>
+                <th className="px-4 py-2 font-medium text-gray-700">Title</th>
                 <th className="px-4 py-2 font-medium text-gray-700">Stage</th>
                 <th className="px-4 py-2 font-medium text-gray-700">
-                  Last Contact
+                  Last Interaction
                 </th>
                 <th className="px-4 py-2 font-medium text-gray-700">
                   Next Action
@@ -145,7 +153,7 @@ export default function Contacts() {
             </thead>
             <tbody>
               {filteredContacts.map((contact) => (
-                <tr key={contact.id} className="border-b hover:bg-gray-50">
+                <tr key={contact._id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div>
                       <div className="font-medium">{contact.name}</div>
@@ -155,7 +163,7 @@ export default function Contacts() {
                     </div>
                   </td>
                   <td className="px-4 py-3">{contact.company}</td>
-                  <td className="px-4 py-3">{contact.role}</td>
+                  <td className="px-4 py-3">{contact.title}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${getStageColor(
@@ -166,10 +174,14 @@ export default function Contacts() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    {contact.lastContact}
+                    {contact.lastInteractionAt
+                      ? new Date(contact.lastInteractionAt).toLocaleDateString()
+                      : "-"}
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    {contact.nextAction}
+                    {contact.nextActionAt
+                      ? new Date(contact.nextActionAt).toLocaleDateString()
+                      : "-"}
                   </td>
                 </tr>
               ))}
@@ -184,7 +196,7 @@ export default function Contacts() {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Add Modal */}
       {showModal && (
         <AddContactModal
           onClose={() => setShowModal(false)}
