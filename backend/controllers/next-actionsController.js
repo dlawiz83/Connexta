@@ -2,26 +2,25 @@ const asyncHandler = require('express-async-handler');
 const Contact = require('../models/ContactsModel');
 const Interaction = require('../models/InteractionsModel');
 
-// @desc    Get upcoming next actions for a user
-// @route   GET /api/next-actions?days=7
-// @access  Private
 const getActions = asyncHandler(async (req, res) => {
   try {
-    const userId = req.user._id; //  consistent with authMiddleware
+    const userId = req.user._id;
 
-    // Define date range (today → today + days)
+    // Normalize date range (start of today → end of +days)
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const days = parseInt(req.query.days) || 7;
-    const endDate = new Date();
+    const endDate = new Date(today);
     endDate.setDate(today.getDate() + days);
+    endDate.setHours(23, 59, 59, 999);
 
-    //  Find contacts with nextActionAt in range
+    // Find contacts with nextActionAt in range
     const contacts = await Contact.find({
       user: userId,
       nextActionAt: { $gte: today, $lte: endDate },
     }).sort({ nextActionAt: 1 });
 
-    //  Attach latest interaction snippets
+    // Add latest interaction snippets
     const results = await Promise.all(
       contacts.map(async (contact) => {
         const latestInteraction = await Interaction.findOne({
@@ -35,6 +34,7 @@ const getActions = asyncHandler(async (req, res) => {
           name: contact.name,
           stage: contact.stage,
           nextActionAt: contact.nextActionAt,
+          lastInteractionAt: contact.lastInteractionAt,
           lastInteractionSnippet: latestInteraction?.contentSnippet || null,
         };
       })
