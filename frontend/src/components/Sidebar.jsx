@@ -48,17 +48,7 @@ function Sidebar() {
               <Users className="w-4 h-4" />
               Contacts
             </NavLink>
-            <NavLink
-              to="/pipeline"
-              className={({ isActive }) =>
-                `flex items-center gap-2 w-[90%] rounded px-3 py-2 ${
-                  isActive ? "bg-gray-300" : "hover:bg-gray-300"
-                }`
-              }
-            >
-              <Kanban className="w-4 h-4" />
-              Pipeline
-            </NavLink>
+
             <NavLink
               to="/settings"
               className={({ isActive }) =>

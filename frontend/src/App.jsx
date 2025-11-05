@@ -1,6 +1,6 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
-import Pipeline from "./pages/Pipeline";
+
 import Settings from "./pages/Settings";
 import Dashboard from "./pages/Dashboard";
 import Contacts from "./pages/Contacts";
@@ -16,7 +16,7 @@ function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/contacts" element={<Contacts />} />
-        <Route path="/pipeline" element={<Pipeline />} />
+
         <Route path="/settings" element={<Settings />} />
         <Route path="/login" element={<Login />} />
       </Route>

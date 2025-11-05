@@ -1,5 +1,3 @@
-import { Bell } from "lucide-react";
-
 function TopBar({
   title,
 
@@ -13,9 +11,7 @@ function TopBar({
         className={`bg-white ${width} ${height} ${padding} flex flex-row justify-center items-center`}
       >
         {<h2 className="font-medium leading-none text-[16px] ">{title}</h2>}
-        <div className="ml-auto">
-          <Bell size={20} />
-        </div>
+        <div className="ml-auto"></div>
       </div>
       <hr className="border-gray-300 dark:border-gray-700" />
     </>

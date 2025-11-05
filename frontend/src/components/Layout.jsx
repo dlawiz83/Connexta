@@ -11,8 +11,7 @@ function Layout() {
         return "Dashboard";
       case "/contacts":
         return "Contacts";
-      case "/pipeline":
-        return "Pipeline";
+
       case "/settings":
         return "Settings";
       default:
